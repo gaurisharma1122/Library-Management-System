@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config();
 const zod = require('zod');
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -52,7 +52,10 @@ const UserSignin = async (req, res) => {
             });
         }
         const jwt_token = jwt.sign({ userId: user._id }, JWT_SECRET);
-        return res.status(200).json({
+        return res.status(200).cookie('authcookie', jwt_token, {
+            maxAge: 900000,
+            httpOnly: true
+        }).json({
             message: "User logged in successfully",
             token: jwt_token
         });

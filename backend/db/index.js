@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config();
 const mongoose = require('mongoose');
 const mongodb = process.env.MONGODB_STRING;
 
@@ -34,6 +34,61 @@ const UserSchema = new mongoose.Schema({
     }
 });
 
-const User = mongoose.model('User', UserSchema);
+const BookSchema = new mongoose.Schema({
+    title: {
+        type: String,
+        require: true,
+        trim: true,
+        maxLength: 100
+    },
+    description: {
+        type: String,
+        require: true,
+        trim: true
+    },
+    authors: {
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Author' }],
+        require: true
+    },
+    price: {
+        type: Number,
+        require: true
+    },
+    quantity: {
+        type: Number,
+        require: true
+    },
+    imageSrc: {
+        type: String,
+        require: true
+    },
+    isPublished: {
+        type: Boolean,
+        require: true,
+        default: false
+    }
 
-module.exports = { User };
+});
+
+const AuthorSchema = new mongoose.Schema({
+    firstName: {
+        type: String,
+        require: true,
+        trim: true,
+    },
+    lastName: {
+        type: String,
+        require: true,
+        trim: true,
+    },
+    books: {
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Books' }],
+        require: true
+    }
+});
+
+const User = mongoose.model('User', UserSchema);
+const Book = mongoose.model('Book', BookSchema);
+const Author = mongoose.model('Author', AuthorSchema);
+
+module.exports = { User, Book, Author };
