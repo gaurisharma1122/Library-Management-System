@@ -82,13 +82,49 @@ const AuthorSchema = new mongoose.Schema({
         trim: true,
     },
     books: {
-        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Books' }],
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Book' }],
         require: true
     }
 });
 
+const IssuedBooksSchema = new mongoose.Schema({
+    book_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Book',
+        require: true
+    },
+    user_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        require: true
+    },
+    issuedDate: {
+        type: Date,
+        require: true,
+        default: getCurrentDate()
+    },
+    returnDate: {
+        type: Date,
+        require: true,
+    },
+    returnPending: {
+        type: Boolean,
+        require: true,
+        default: true,
+    }
+});
+
+function getCurrentDate() {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // Note: January is 0
+    const day = currentDate.getDate();
+    return (`${year}-${month}-${day}`);
+}
+
 const User = mongoose.model('User', UserSchema);
 const Book = mongoose.model('Book', BookSchema);
 const Author = mongoose.model('Author', AuthorSchema);
+const IssuedBooks = mongoose.model('IssuedBooks', IssuedBooksSchema);
 
-module.exports = { User, Book, Author };
+module.exports = { User, Book, Author, IssuedBooks };

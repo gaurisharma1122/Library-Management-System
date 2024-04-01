@@ -26,7 +26,7 @@ const userAuth = (req, res, next) => {
 const isAdminAuth = async (req, res, next) => {
     try {
         const userId = req.userId;
-        console.log(userId);
+        // console.log(userId);
         const admin = await User.findOne({ _id: userId });
         if (admin && admin.isAdmin==true) {
             next();

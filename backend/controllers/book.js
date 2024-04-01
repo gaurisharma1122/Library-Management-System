@@ -31,4 +31,85 @@ const AddBooks = async (req, res) => {
     }
 }
 
-module.exports = { AddBooks };
+const UpdateBooks = async (req, res) => {
+    try {
+        const { _id, ...updateBody } = req.body;
+        const expectedUpdateFields = ['title', 'description', 'price', 'quantity', 'imageSrc'];
+        for (const property of Object.keys(updateBody)) {
+            if (!expectedUpdateFields.includes(property)) {
+                delete updateBody[property];
+            }
+        }
+        const book = await Book.findOneAndUpdate({ _id }, updateBody);
+        return res.status(200).json({
+            message: "Book updated successfully"
+        });
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({
+            message: error.message
+        });
+    }
+}
+
+const DeleteBooks = async (req, res) => {
+    try {
+        const { _id } = req.body;
+        const deletedBook = await Book.deleteOne({ _id });
+        return res.status(200).json({
+            message: "Book deleted successfully"
+        });
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({
+            message: error.message
+        });
+    }
+}
+
+const PublishBooks = async (req, res) => {
+    try {
+        const { _id, publish } = req.body;
+        if (typeof (publish) == 'boolean') {
+            const book = await Book.updateOne({ _id }, { isPublished: publish });
+            return res.status(200).json({
+                message: `Book ${publish === true ? 'Published' : 'Unpublished'} successfully`
+            });
+        } else {
+            return res.status(403).json({
+                message: "Wrong value"
+            });
+        }
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({
+            message: error.message
+        });
+    }
+}
+
+const SearchBooks = async (req, res) => {
+    
+}
+
+const GetAllBooks = async (req, res) => {
+    try {
+        const books = await Book.find({});
+        return res.status(200).json({
+            books: books
+        })
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({
+            message: error.message
+        });
+    }
+}
+
+const IssueBooks = (req, res) => {
+    
+}
+
+
+
+module.exports = { AddBooks, GetAllBooks, UpdateBooks, DeleteBooks,PublishBooks,SearchBooks, IssueBooks };
