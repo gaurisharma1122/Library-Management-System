@@ -101,18 +101,36 @@ const IssuedBooksSchema = new mongoose.Schema({
     issuedDate: {
         type: Date,
         require: true,
-        default: getCurrentDate()
+        default: null
+    },
+    noOfDays: {
+        type: Number,
+        require: true,
     },
     returnDate: {
         type: Date,
         require: true,
+        default: null
     },
     returnPending: {
+        type: String,
+        require: true,
+        enum:['N/A', 'Pending','Returned'],
+        default: 'N/A',
+    },
+    fine: {
+        type: Number,
+        require: true,
+        default: null
+    },
+    approveStatus: {
         type: Boolean,
         require: true,
-        default: true,
+        default: false
     }
 });
+
+
 
 function getCurrentDate() {
     const currentDate = new Date();

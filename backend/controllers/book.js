@@ -1,4 +1,4 @@
-const { Book, Author } = require("../db");
+const { Book, Author, User, IssuedBooks } = require("../db");
 
 const AddBooks = async (req, res) => {
     try {
@@ -95,9 +95,16 @@ const SearchBooks = async (req, res) => {
 const GetAllBooks = async (req, res) => {
     try {
         const books = await Book.find({});
-        return res.status(200).json({
-            books: books
-        })
+        if (books) {
+            return res.status(200).json({
+                books: books
+            });
+        } else {
+            return res.status(411).json({
+                message: "no Data"
+            });
+        }
+        
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({
@@ -106,10 +113,47 @@ const GetAllBooks = async (req, res) => {
     }
 }
 
-const IssueBooks = (req, res) => {
-    
+const requestForBookIssue = async (req, res) => {
+    try {
+        const { book_id, user_id, noOfDays } = req.body;
+        const book = await Book.findById(book_id);
+        const user = await User.findById(user_id);
+        if (book && book.quantity > 0 && user) {
+            const issuedBook = await IssuedBooks.create({ book_id, user_id, noOfDays });
+        } else {
+            return res.status(411).json({
+                message: "Book or User doesn't exist"
+            });
+        }
+            
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({
+            message: error.message
+        });
+    }
+}
+
+const approveRejectBookIssueRequest = async (req, res) => {
+    try {
+        const { _id, approve } = req.body;
+        const updateBody = approve === true ? { issuedDate: new Date(), returnPending: 'Pending', approveStatus: true } : { issuedDate: null, returnPending: '/NA', approveStatus: false };
+        const issuedBook = await IssuedBooks.findOneAndUpdate({ _id }, updateBody);
+        return res.status(200).json({
+            message: `${approve === 'true' ? 'Book issued successfully' : 'Issue request rejected'}`
+
+        });
+
+    }   catch (error) {
+        console.log(error.message);
+        return res.status(500).json({
+            message: error.message
+        });
+    }
 }
 
 
 
-module.exports = { AddBooks, GetAllBooks, UpdateBooks, DeleteBooks,PublishBooks,SearchBooks, IssueBooks };
+
+
+module.exports = { AddBooks, GetAllBooks, UpdateBooks, DeleteBooks, PublishBooks, SearchBooks, requestForBookIssue, approveRejectBookIssueRequest };
