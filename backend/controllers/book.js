@@ -158,6 +158,18 @@ const approveRejectBookIssueRequest = async (req, res) => {
     }
 }
 
+const returnBook = (req, res) => {
+    
+}
+
+const getBookById = (req, res) => {
+    
+}
+
+const getBooksByAuthorId = (req, res) => {
+    
+}
+
 
 
 
