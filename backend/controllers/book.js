@@ -120,6 +120,9 @@ const requestForBookIssue = async (req, res) => {
         const user = await User.findById(user_id);
         if (book && book.quantity > 0 && user) {
             const issuedBook = await IssuedBooks.create({ book_id, user_id, noOfDays });
+            return res.status(200).json({
+                message:"Requested for book issue successfully"
+            })
         } else {
             return res.status(411).json({
                 message: "Book or User doesn't exist"
@@ -139,8 +142,11 @@ const approveRejectBookIssueRequest = async (req, res) => {
         const { _id, approve } = req.body;
         const updateBody = approve === true ? { issuedDate: new Date(), returnPending: 'Pending', approveStatus: true } : { issuedDate: null, returnPending: '/NA', approveStatus: false };
         const issuedBook = await IssuedBooks.findOneAndUpdate({ _id }, updateBody);
+        if (approve === true) {
+            const book = await Book.findOneAndUpdate({ _id: issuedBook.book_id }, { $inc: { quantity: -1 } });
+        }
         return res.status(200).json({
-            message: `${approve === 'true' ? 'Book issued successfully' : 'Issue request rejected'}`
+            message: `${approve === true ? 'Book issued successfully' : 'Issue request rejected'}`
 
         });
 
